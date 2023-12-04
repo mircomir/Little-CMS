@@ -134,6 +134,7 @@ cmsUInt8Number* UnrollChunkyBytes(CMSREGISTER _cmsTRANSFORM* info,
         {
             v = ((cmsUInt32Number)((cmsUInt32Number)v << 16) / alpha_factor);
             if (v > 0xffff) v = 0xffff;
+            v = FROM_8_TO_16(FROM_16_TO_8(v));
         }
 
         wIn[index] = (cmsUInt16Number) v;
@@ -202,6 +203,7 @@ cmsUInt8Number* UnrollPlanarBytes(CMSREGISTER _cmsTRANSFORM* info,
         {
             v = ((cmsUInt32Number)((cmsUInt32Number)v << 16) / alpha_factor);
             if (v > 0xffff) v = 0xffff;
+            v = FROM_8_TO_16(FROM_16_TO_8(v));
         }
 
         wIn[index] = (cmsUInt16Number) v;
@@ -577,8 +579,8 @@ cmsUInt8Number* UnrollAnyWordsPremul(CMSREGISTER _cmsTRANSFORM* info,
    cmsUInt32Number ExtraFirst  = DoSwap ^ SwapFirst;
    cmsUInt32Number i;
 
-   cmsUInt16Number alpha = (ExtraFirst ? accum[0] : accum[nChan - 1]);
-   cmsUInt32Number alpha_factor = _cmsToFixedDomain(FROM_8_TO_16(alpha));
+   cmsUInt16Number alpha = (ExtraFirst ? ((cmsUInt16Number*)accum)[0] : ((cmsUInt16Number*)accum)[nChan]);
+   cmsUInt32Number alpha_factor = _cmsToFixedDomain(alpha);
 
     if (ExtraFirst) {
         accum += sizeof(cmsUInt16Number);
@@ -662,8 +664,8 @@ cmsUInt8Number* UnrollPlanarWordsPremul(CMSREGISTER _cmsTRANSFORM* info,
     cmsUInt32Number ExtraFirst = DoSwap ^ SwapFirst;
     cmsUInt8Number* Init = accum;
 
-    cmsUInt16Number  alpha = (ExtraFirst ? accum[0] : accum[(nChan - 1) * Stride]);
-    cmsUInt32Number alpha_factor = _cmsToFixedDomain(FROM_8_TO_16(alpha));
+    cmsUInt16Number  alpha = (ExtraFirst ? ((cmsUInt16Number*)accum)[0] : ((cmsUInt16Number*)accum)[nChan * Stride]);
+    cmsUInt32Number alpha_factor = _cmsToFixedDomain(alpha);
 
     if (ExtraFirst) {
         accum += Stride;
